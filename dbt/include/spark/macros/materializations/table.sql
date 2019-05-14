@@ -1,4 +1,5 @@
 {% materialization table, adapter = 'spark' %}
+  
   {%- set identifier = model['alias'] -%}
 
   {%- set old_relation = adapter.get_relation(database=database, schema=schema, identifier=identifier) -%}
@@ -7,12 +8,12 @@
                                                 database=database,
                                                 type='table') -%}
 
+  {{ run_hooks(pre_hooks) }}
+
   -- setup: if the target relation already exists, drop it
   {% if old_relation -%}
     {{ adapter.drop_relation(old_relation) }}
   {%- endif %}
-
-  {{ run_hooks(pre_hooks) }}
 
   -- build model
   {% call statement('main') -%}
